@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
+
 import { CreateTodoInput } from './dto/create-todo.input';
 import { UpdateTodoInput } from './dto/update-todo.input';
 
@@ -9,7 +11,19 @@ export class TodoService {
   }
 
   findAll() {
-    return `This action returns all todo`;
+    console.log('path of file', `${__dirname}/todo.data.js`);
+    return fs.readFile(`${__dirname}/todo.data.js`, 'utf-8', (err, data) => {
+      // @ts-expect-error figure out TS solution here
+
+      console.log('result of read file data', data?.todos);
+      console.log('result of read file error', err);
+      if (err) {
+        console.error(err);
+      }
+
+      // @ts-expect-error figure out TS solution here
+      if (data) return data.todos;
+    });
   }
 
   findOne(id: number) {
