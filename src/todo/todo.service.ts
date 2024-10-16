@@ -1,40 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Todo } from './todo.entity';
+import { Repository } from 'typeorm';
 
-import { CreateTodoInput } from './dto/create-todo.input';
-import { UpdateTodoInput } from './dto/update-todo.input';
+// throw errors here, but maybe take care of handling them at higher level
 
+// business level validation
 @Injectable()
 export class TodoService {
-  create(createTodoInput: CreateTodoInput) {
-    return 'This action adds a new todo';
+  constructor(
+    @InjectRepository(Todo)
+    private todosRepo: Repository<Todo>,
+  ) {}
+
+  create(todo: string) {
+    return this.todosRepo.save({ todo });
   }
 
   findAll() {
-    console.log('path of file', `${__dirname}/todo.data.js`);
-    return fs.readFile(`${__dirname}/todo.data.js`, 'utf-8', (err, data) => {
-      // @ts-expect-error figure out TS solution here
-
-      console.log('result of read file data', data?.todos);
-      console.log('result of read file error', err);
-      if (err) {
-        console.error(err);
-      }
-
-      // @ts-expect-error figure out TS solution here
-      if (data) return data.todos;
-    });
+    return this.todosRepo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} todo`;
+  async updateOne(input: { id: string; todo: string }) {
+    await this.todosRepo.update(parseInt(input.id), { todo: input.todo });
+    return this.todosRepo.findOneOrFail({ where: { id: parseInt(input.id) } });
   }
 
-  update(id: number, updateTodoInput: UpdateTodoInput) {
-    return `This action updates a #${id} todo`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} todo`;
+  deleteOne(id: string) {
+    return this.todosRepo.delete(parseInt(id));
   }
 }

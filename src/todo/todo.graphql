@@ -1,28 +1,32 @@
 type Todo {
-  id: ID!
-  description: String!
-  isComplete: Boolean
+  todo: String!
+  id: Float!
+}
+
+type TodosConnection {
+  nodes: [Todo]!
 }
 
 input CreateTodoInput {
-  id: ID!
-  description: String!
-  isComplete: Boolean
+  todo: String!
 }
 
 input UpdateTodoInput {
-  id: Int!
-  description: String
-  isComplete: Boolean
+  todo: String!
+  id: Float!
+}
+
+input DeleteTodoInput {
+  id: Float!
 }
 
 type Query {
-  todos: [Todo]!
-  todo(id: Int!): Todo
+  todos: TodosConnection!
 }
 
+# // return types on mutations either success or error type, success can include the info
 type Mutation {
-  createTodo(createTodoInput: CreateTodoInput!): Todo!
-  updateTodo(updateTodoInput: UpdateTodoInput!): Todo!
-  removeTodo(id: Int!): Todo
+  createTodo(input: CreateTodoInput!): Todo!
+  updateTodo(input: UpdateTodoInput!): Todo!
+  deleteTodo(input: DeleteTodoInput!): String!
 }
